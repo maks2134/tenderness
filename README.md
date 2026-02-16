@@ -187,6 +187,3 @@ touch server/migrations/004_your_migration.sql
 - `description` - TEXT
 - `image_url` - VARCHAR(500)
 
-## Лицензия
-
-MIT

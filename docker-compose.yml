@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:17.4-alpine
+    container_name: tenderness-postgres
+    environment:
+      POSTGRES_USER: tenderness
+      POSTGRES_PASSWORD: tenderness123
+      POSTGRES_DB: tenderness_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tenderness"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tenderness-network
+
+  app:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: tenderness-app
+    environment:
+      PORT: ":3000"
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: tenderness
+      DB_PASSWORD: tenderness123
+      DB_NAME: tenderness_db
+      DB_SSLMODE: disable
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - tenderness-network
+    volumes:
+      - ./server:/app
+      - /app/vendor
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: tenderness-client
+    ports:
+      - "80:80"
+    depends_on:
+      - app
+    networks:
+      - tenderness-network
+
+volumes:
+  postgres_data:
+
+networks:
+  tenderness-network:
+    driver: bridge
+

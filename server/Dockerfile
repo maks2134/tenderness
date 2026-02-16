@@ -8,8 +8,9 @@ RUN go mod download
 
 COPY cmd/tenderness ./cmd/tenderness/
 COPY internal ./internal/
-COPY .env ./
+COPY migrations ./migrations/
 
+RUN go mod tidy
 RUN CGO_ENABLED=0 GOOS=linux go build -o /tenderness-app ./cmd/tenderness
 
 FROM alpine:latest
@@ -19,7 +20,7 @@ RUN apk --no-cache add curl
 WORKDIR /root/
 
 COPY --from=builder /tenderness-app .
-COPY --from=builder /app/.env ./
+COPY --from=builder /app/migrations ./migrations/
 
 EXPOSE 3000
 

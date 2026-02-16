@@ -1,0 +1,45 @@
+.category-filter {
+  margin-bottom: 3rem;
+}
+
+.category-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.category-btn {
+  padding: 0.75rem 1.5rem;
+  background: #1a1a1a;
+  border: 2px solid #333;
+  border-radius: 8px;
+  color: #b8b8b8;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.category-btn:hover {
+  border-color: #ff6b9d;
+  color: #ff6b9d;
+  transform: translateY(-2px);
+}
+
+.category-btn.active {
+  background: linear-gradient(135deg, #ff6b9d, #c44569);
+  border-color: transparent;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .category-buttons {
+    gap: 0.5rem;
+  }
+
+  .category-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+

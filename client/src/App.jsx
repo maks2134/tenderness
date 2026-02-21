@@ -4,9 +4,14 @@ import ProductGrid from './components/ProductGrid'
 import FeaturedProducts from './components/FeaturedProducts'
 import CategoryFilter from './components/CategoryFilter'
 import SearchBar from './components/SearchBar'
+import Login from './components/Login'
+import Register from './components/Register'
+import Profile from './components/Profile'
 import './App.css'
 
 function App() {
+  const [user, setUser] = useState(null)
+  const [currentView, setCurrentView] = useState('shop')
   const [products, setProducts] = useState([])
   const [featuredProducts, setFeaturedProducts] = useState([])
   const [categories, setCategories] = useState([])
@@ -18,19 +23,34 @@ function App() {
   const limit = 12
 
   useEffect(() => {
+    const token = localStorage.getItem('token')
+    const savedUser = localStorage.getItem('user')
+    
+    if (token && savedUser) {
+      try {
+        setUser(JSON.parse(savedUser))
+      } catch (error) {
+        console.error('Error parsing saved user data:', error)
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+      }
+    }
+    
     fetchCategories()
     fetchFeaturedProducts()
   }, [])
 
   useEffect(() => {
-    if (searchQuery) {
-      handleSearch(searchQuery)
-    } else if (selectedCategory) {
-      fetchProductsByCategory(selectedCategory)
-    } else {
-      fetchProducts()
+    if (currentView === 'shop') {
+      if (searchQuery) {
+        handleSearch(searchQuery)
+      } else if (selectedCategory) {
+        fetchProductsByCategory(selectedCategory)
+      } else {
+        fetchProducts()
+      }
     }
-  }, [page, selectedCategory, searchQuery])
+  }, [page, selectedCategory, searchQuery, currentView])
 
   const fetchProducts = async () => {
     setLoading(true)
@@ -117,11 +137,78 @@ function App() {
     setPage(1)
   }
 
+  const handleLogin = (userData) => {
+    setUser(userData)
+    setCurrentView('shop')
+  }
+
+  const handleRegister = (userData) => {
+    setUser(userData)
+    setCurrentView('shop')
+  }
+
+  const handleLogout = () => {
+    setUser(null)
+    setCurrentView('shop')
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+  }
+
+  const navigateToProfile = () => {
+    setCurrentView('profile')
+  }
+
+  const navigateToLogin = () => {
+    setCurrentView('login')
+  }
+
+  const navigateToRegister = () => {
+    setCurrentView('register')
+  }
+
+  const navigateToShop = () => {
+    setCurrentView('shop')
+  }
+
+  // Render different views based on currentView
+  if (currentView === 'login') {
+    return (
+      <Login 
+        onLogin={handleLogin}
+        onSwitchToRegister={navigateToRegister}
+      />
+    )
+  }
+
+  if (currentView === 'register') {
+    return (
+      <Register 
+        onRegister={handleRegister}
+        onSwitchToLogin={navigateToLogin}
+      />
+    )
+  }
+
+  if (currentView === 'profile') {
+    return (
+      <Profile 
+        user={user}
+        onLogout={handleLogout}
+      />
+    )
+  }
+
+  // Main shop view
   const totalPages = Math.ceil(total / limit)
 
   return (
     <div className="app">
-      <Header />
+      <Header 
+        user={user}
+        onLogin={navigateToLogin}
+        onLogout={handleLogout}
+        onProfile={navigateToProfile}
+      />
       <main className="main-content">
         <div className="container">
           <h1 className="main-title">Добро пожаловать в Tenderness</h1>

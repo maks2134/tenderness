@@ -7,6 +7,7 @@ import (
 	"tenderness/internal/configs"
 	"tenderness/internal/domain/storage"
 	"tenderness/internal/handlers"
+	"tenderness/internal/middleware"
 	"tenderness/internal/repository"
 	"tenderness/internal/routes"
 	"tenderness/internal/services"
@@ -33,13 +34,22 @@ func Run() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
+	// Product repositories and services
 	productRepo := repository.NewProductRepository(db.DB)
 	categoryRepo := repository.NewCategoryRepository(db.DB)
-
 	productService := services.NewProductService(productRepo, categoryRepo)
 
+	// Auth repositories and services
+	userRepo := repository.NewUserRepository(db.DB)
+	jwtMiddleware := middleware.NewJWTMiddleware("your-secret-key-here") // TODO: Move to config
+	authService := services.NewAuthService(userRepo, jwtMiddleware)
+	oauth2Service := services.NewOAuth2Service(userRepo, jwtMiddleware)
+
+	// Handlers
 	healthHandler := handlers.NewHealthHandler()
 	productHandler := handlers.NewProductHandler(productService)
+	authHandler := handlers.NewAuthHandler(authService, jwtMiddleware)
+	oauth2Handler := handlers.NewOAuth2Handler(oauth2Service)
 
 	app := fiber.New(fiber.Config{
 		AppName: "Tenderness App",
@@ -61,7 +71,7 @@ func Run() {
 		AllowHeaders: "Origin,Content-Type,Accept,Authorization",
 	}))
 
-	routes.SetupRoutes(app, healthHandler, productHandler)
+	routes.SetupRoutes(app, healthHandler, productHandler, authHandler, oauth2Handler, jwtMiddleware)
 
 	log.Println("Starting server on port " + config.Port)
 	log.Fatal(app.Listen(config.Port))

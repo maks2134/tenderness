@@ -12,6 +12,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 2rem;
 }
 
 .logo {
@@ -26,6 +27,8 @@
 .nav {
   display: flex;
   gap: 2rem;
+  flex: 1;
+  justify-content: center;
 }
 
 .nav-link {
@@ -33,6 +36,7 @@
   font-weight: 500;
   transition: color 0.2s;
   position: relative;
+  text-decoration: none;
 }
 
 .nav-link:hover {
@@ -54,7 +58,104 @@
   width: 100%;
 }
 
+.auth-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.auth-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.login-button {
+  background: transparent;
+  color: #ff6b9d;
+  border: 2px solid #ff6b9d;
+}
+
+.login-button:hover {
+  background: #ff6b9d;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.register-button {
+  background: linear-gradient(135deg, #ff6b9d, #c44569);
+  color: white;
+}
+
+.register-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome-text {
+  color: #b8b8b8;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.profile-button {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+}
+
+.profile-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.logout-button {
+  background: #dc3545;
+  color: white;
+}
+
+.logout-button:hover {
+  background: #c82333;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1024px) {
+  .header-content {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  
+  .nav {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .auth-section {
+    order: 2;
+  }
+}
+
 @media (max-width: 768px) {
+  .header-content {
+    gap: 0.5rem;
+  }
+  
   .nav {
     gap: 1rem;
     font-size: 0.9rem;
@@ -62,6 +163,26 @@
 
   .logo {
     font-size: 1.5rem;
+  }
+  
+  .auth-buttons {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .auth-button {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .user-menu {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+  
+  .welcome-text {
+    font-size: 12px;
   }
 }
 

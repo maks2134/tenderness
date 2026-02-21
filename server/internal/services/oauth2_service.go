@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"tenderness/internal/domain/models"
@@ -49,8 +50,8 @@ func NewOAuth2Service(userRepo *repository.UserRepository, jwt *middleware.JWTMi
 
 // Google OAuth2 configuration
 var googleOAuth2Config = &oauth2.Config{
-	ClientID:     "your-google-client-id",
-	ClientSecret: "your-google-client-secret",
+	ClientID:     getEnv("GOOGLE_CLIENT_ID", "your-google-client-id"),
+	ClientSecret: getEnv("GOOGLE_CLIENT_SECRET", "your-google-client-secret"),
 	RedirectURL:  "http://localhost/api/auth/google/callback",
 	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"},
 	Endpoint:     google.Endpoint,
@@ -58,14 +59,21 @@ var googleOAuth2Config = &oauth2.Config{
 
 // GitHub OAuth2 configuration
 var githubOAuth2Config = &oauth2.Config{
-	ClientID:     "your-github-client-id",
-	ClientSecret: "your-github-client-secret",
+	ClientID:     getEnv("GITHUB_CLIENT_ID", "your-github-client-id"),
+	ClientSecret: getEnv("GITHUB_CLIENT_SECRET", "your-github-client-secret"),
 	RedirectURL:  "http://localhost/api/auth/github/callback",
 	Scopes:       []string{"user:email"},
 	Endpoint: oauth2.Endpoint{
 		AuthURL:  "https://github.com/login/oauth/authorize",
 		TokenURL: "https://github.com/login/oauth/access_token",
 	},
+}
+
+func getEnv(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
 }
 
 func (s *OAuth2Service) GetAuthURL(provider, state string) (string, error) {
